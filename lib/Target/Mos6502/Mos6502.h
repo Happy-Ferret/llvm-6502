@@ -28,7 +28,6 @@ namespace llvm {
   class MachineInstr;
 
   FunctionPass *createMos6502ISelDag(Mos6502TargetMachine &TM);
-  FunctionPass *createMos6502DelaySlotFillerPass(TargetMachine &TM);
 
   void LowerMos6502MachineInstrToMCInst(const MachineInstr *MI,
                                       MCInst &OutMI,

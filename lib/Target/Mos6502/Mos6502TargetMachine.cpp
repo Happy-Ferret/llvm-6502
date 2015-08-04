@@ -89,6 +89,4 @@ bool Mos6502PassConfig::addInstSelector() {
   return false;
 }
 
-void Mos6502PassConfig::addPreEmitPass(){
-  addPass(createMos6502DelaySlotFillerPass(getMos6502TargetMachine()));
-}
+void Mos6502PassConfig::addPreEmitPass(){}

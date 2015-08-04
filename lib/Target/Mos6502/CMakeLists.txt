@@ -12,7 +12,6 @@ tablegen(LLVM Mos6502GenCallingConv.inc -gen-callingconv)
 add_public_tablegen_target(Mos6502CommonTableGen)
 
 add_llvm_target(Mos6502CodeGen
-  DelaySlotFiller.cpp
   Mos6502AsmPrinter.cpp
   Mos6502InstrInfo.cpp
   Mos6502ISelDAGToDAG.cpp
