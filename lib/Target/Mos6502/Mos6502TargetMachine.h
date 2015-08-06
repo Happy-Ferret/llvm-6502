@@ -1,4 +1,4 @@
-//===-- Mos6502TargetMachine.h - Define TargetMachine for Mos6502 ---*- C++ -*-===//
+//===------- Mos6502TargetMachine.h - Define TargetMachine ------*- C++ -*-===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -21,7 +21,6 @@
 namespace llvm {
 
 class Mos6502TargetMachine : public LLVMTargetMachine {
-  std::unique_ptr<TargetLoweringObjectFile> TLOF;
   Mos6502Subtarget Subtarget;
 
 public:
@@ -36,9 +35,6 @@ public:
 
   // Pass Pipeline Configuration
   TargetPassConfig *createPassConfig(PassManagerBase &PM) override;
-  TargetLoweringObjectFile *getObjFileLowering() const override {
-    return TLOF.get();
-  }
 };
 
 } // end namespace llvm

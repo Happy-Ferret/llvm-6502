@@ -22,11 +22,10 @@ add_llvm_target(Mos6502CodeGen
   Mos6502Subtarget.cpp
   Mos6502TargetMachine.cpp
   Mos6502MCInstLower.cpp
-  Mos6502TargetObjectFile.cpp
-  )
+)
 
 add_subdirectory(TargetInfo)
 add_subdirectory(MCTargetDesc)
 add_subdirectory(InstPrinter)
-add_subdirectory(AsmParser)
-add_subdirectory(Disassembler)
+#add_subdirectory(AsmParser)
+#add_subdirectory(Disassembler)

@@ -29,13 +29,15 @@ public:
   void emitPrologue(MachineFunction &MF, MachineBasicBlock &MBB) const override;
   void emitEpilogue(MachineFunction &MF, MachineBasicBlock &MBB) const override;
 
+  bool hasFP(const MachineFunction &MF) const override;
+
+    /*
   void
   eliminateCallFramePseudoInstr(MachineFunction &MF,
                                 MachineBasicBlock &MBB,
                                 MachineBasicBlock::iterator I) const override;
 
   bool hasReservedCallFrame(const MachineFunction &MF) const override;
-  bool hasFP(const MachineFunction &MF) const override;
   void determineCalleeSaves(MachineFunction &MF, BitVector &SavedRegs,
                             RegScavenger *RS = nullptr) const override;
 
@@ -52,7 +54,7 @@ private:
                         MachineBasicBlock &MBB,
                         MachineBasicBlock::iterator MBBI,
                         int NumBytes, unsigned ADDrr, unsigned ADDri) const;
-
+  */
 };
 
 } // End llvm namespace

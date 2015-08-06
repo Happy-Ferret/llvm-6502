@@ -18,6 +18,7 @@
 #include "llvm/MC/MCRegisterInfo.h"
 #include "llvm/MC/MCSymbol.h"
 #include "llvm/Support/raw_ostream.h"
+
 using namespace llvm;
 
 #define DEBUG_TYPE "asm-printer"
@@ -34,10 +35,6 @@ namespace Mos6502 {
 #define PRINT_ALIAS_INSTR
 #include "Mos6502GenAsmWriter.inc"
 
-bool Mos6502InstPrinter::isV9(const MCSubtargetInfo &STI) const {
-  return (STI.getFeatureBits()[Mos6502::FeatureV9]) != 0;
-}
-
 void Mos6502InstPrinter::printRegName(raw_ostream &OS, unsigned RegNo) const
 {
   OS << '%' << StringRef(getRegisterName(RegNo)).lower();
@@ -53,6 +50,9 @@ void Mos6502InstPrinter::printInst(const MCInst *MI, raw_ostream &O,
 bool Mos6502InstPrinter::printMos6502AliasInstr(const MCInst *MI,
                                             const MCSubtargetInfo &STI,
                                             raw_ostream &O) {
+  return false;
+
+  /*
   switch (MI->getOpcode()) {
   default: return false;
   case M6502::JMPLrr:
@@ -102,6 +102,7 @@ bool Mos6502InstPrinter::printMos6502AliasInstr(const MCInst *MI,
     return true;
   }
   }
+  */
 }
 
 void Mos6502InstPrinter::printOperand(const MCInst *MI, int opNum,
@@ -136,8 +137,8 @@ void Mos6502InstPrinter::printMemOperand(const MCInst *MI, int opNum,
   }
   const MCOperand &MO = MI->getOperand(opNum+1);
 
-  if (MO.isReg() && MO.getReg() == M6502::G0)
-    return;   // don't print "+%g0"
+  //if (MO.isReg() && MO.getReg() == M6502::G0)
+  //  return;   // don't print "+%g0"
   if (MO.isImm() && MO.getImm() == 0)
     return;   // don't print "+0"
 
@@ -150,6 +151,7 @@ void Mos6502InstPrinter::printCCOperand(const MCInst *MI, int opNum,
                                       const MCSubtargetInfo &STI,
                                       raw_ostream &O) {
   int CC = (int)MI->getOperand(opNum).getImm();
+  /*
   switch (MI->getOpcode()) {
   default: break;
   case M6502::FBCOND:
@@ -167,6 +169,7 @@ void Mos6502InstPrinter::printCCOperand(const MCInst *MI, int opNum,
     CC = (CC < 16) ? (CC + 16) : CC;
     break;
   }
+  */
   O << MOS6502CondCodeToString((SPCC::CondCodes)CC);
 }
 

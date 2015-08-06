@@ -26,9 +26,11 @@ include "Mos6502InstrInfo.td"
 
 def Mos6502InstrInfo : InstrInfo;
 
+/*
 def Mos6502AsmParser : AsmParser {
   bit ShouldEmitMatchRegisterName = 0;
 }
+*/
 
 //===----------------------------------------------------------------------===//
 // MOS6502 processors supported.
@@ -52,6 +54,6 @@ def Mos6502AsmWriter : AsmWriter {
 def Mos6502 : Target {
   // Pull in Instruction Info:
   let InstructionSet = Mos6502InstrInfo;
-  let AssemblyParsers  = [Mos6502AsmParser];
+  //let AssemblyParsers  = [Mos6502AsmParser];
   let AssemblyWriters = [Mos6502AsmWriter];
 }

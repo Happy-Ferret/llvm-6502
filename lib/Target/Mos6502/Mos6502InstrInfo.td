@@ -44,4 +44,27 @@ let Defs = [X, SREG] in
                       (ins XR:$src),
                       "inx",
                       [(set XR:$dst, (add XR:$src, 1)), (implicit SREG)]>;
+
+  def DEX : InstM6502<(outs XR:$dst),
+                      (ins XR:$src),
+                      "dex",
+                      [(set XR:$dst, (sub XR:$src, 1)), (implicit SREG)]>;
 }
+
+let Defs = [Y, SREG] in
+{
+  def INY : InstM6502<(outs YR:$dst),
+                      (ins YR:$src),
+                      "iny",
+                      [(set YR:$dst, (add YR:$src, 1)), (implicit SREG)]>;
+
+  def DEY : InstM6502<(outs YR:$dst),
+                      (ins YR:$src),
+                      "dey",
+                      [(set YR:$dst, (sub YR:$src, 1)), (implicit SREG)]>;
+}
+
+def NOP : InstM6502<(outs), (ins), "nop", []>;
+
+def ADJCALLSTACKDOWN : Pseudo<(outs), (ins), "#ADJCALLSTACKDOWN", []>;
+def ADJCALLSTACKUP : Pseudo<(outs), (ins), "#ADJCALLSTACKUP", []>;

@@ -22,6 +22,17 @@
 namespace llvm {
 struct Mos6502RegisterInfo : public Mos6502GenRegisterInfo {
   Mos6502RegisterInfo();
+
+  const uint16_t *getCalleeSavedRegs(const MachineFunction *MF = 0) const override;
+  BitVector getReservedRegs(const MachineFunction &MF) const override;
+
+  /// Stack Frame Processing Methods
+  void eliminateFrameIndex(MachineBasicBlock::iterator MI, int SPAdj,
+                           unsigned FIOperandNum,
+                           RegScavenger *RS = NULL) const override;
+
+  /// Debug information queries.
+  unsigned getFrameRegister(const MachineFunction &MF) const override;
 };
 
 } // end namespace llvm

@@ -30,4 +30,4 @@ using namespace llvm;
 #define GET_REGINFO_TARGET_DESC
 #include "Mos6502GenRegisterInfo.inc"
 
-Mos6502RegisterInfo::Mos6502RegisterInfo() : Mos6502GenRegisterInfo(M6502::O7) {}
+Mos6502RegisterInfo::Mos6502RegisterInfo() : Mos6502GenRegisterInfo(0) {}

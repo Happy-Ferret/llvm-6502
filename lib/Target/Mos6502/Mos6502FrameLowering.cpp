@@ -34,56 +34,12 @@ DisableLeafProc("disable-mos6502-leaf-proc",
                 cl::Hidden);
 
 Mos6502FrameLowering::Mos6502FrameLowering(const Mos6502Subtarget &ST)
-    : TargetFrameLowering(TargetFrameLowering::StackGrowsDown,
-                          ST.is64Bit() ? 16 : 8, 0, ST.is64Bit() ? 16 : 8) {}
+    : TargetFrameLowering(TargetFrameLowering::StackGrowsDown, 8, 0, 8) {}
 
-void Mos6502FrameLowering::emitSPAdjustment(MachineFunction &MF,
-                                          MachineBasicBlock &MBB,
-                                          MachineBasicBlock::iterator MBBI,
-                                          int NumBytes,
-                                          unsigned ADDrr,
-                                          unsigned ADDri) const {
-
-  DebugLoc dl = (MBBI != MBB.end()) ? MBBI->getDebugLoc() : DebugLoc();
-  const Mos6502InstrInfo &TII =
-      *static_cast<const Mos6502InstrInfo *>(MF.getSubtarget().getInstrInfo());
-
-  if (NumBytes >= -4096 && NumBytes < 4096) {
-    BuildMI(MBB, MBBI, dl, TII.get(ADDri), M6502::O6)
-      .addReg(M6502::O6).addImm(NumBytes);
-    return;
-  }
-
-  // Emit this the hard way.  This clobbers G1 which we always know is
-  // available here.
-  if (NumBytes >= 0) {
-    // Emit nonnegative numbers with sethi + or.
-    // sethi %hi(NumBytes), %g1
-    // or %g1, %lo(NumBytes), %g1
-    // add %sp, %g1, %sp
-    BuildMI(MBB, MBBI, dl, TII.get(M6502::SETHIi), M6502::G1)
-      .addImm(HI22(NumBytes));
-    BuildMI(MBB, MBBI, dl, TII.get(M6502::ORri), M6502::G1)
-      .addReg(M6502::G1).addImm(LO10(NumBytes));
-    BuildMI(MBB, MBBI, dl, TII.get(ADDrr), M6502::O6)
-      .addReg(M6502::O6).addReg(M6502::G1);
-    return ;
-  }
-
-  // Emit negative numbers with sethi + xor.
-  // sethi %hix(NumBytes), %g1
-  // xor %g1, %lox(NumBytes), %g1
-  // add %sp, %g1, %sp
-  BuildMI(MBB, MBBI, dl, TII.get(M6502::SETHIi), M6502::G1)
-    .addImm(HIX22(NumBytes));
-  BuildMI(MBB, MBBI, dl, TII.get(M6502::XORri), M6502::G1)
-    .addReg(M6502::G1).addImm(LOX10(NumBytes));
-  BuildMI(MBB, MBBI, dl, TII.get(ADDrr), M6502::O6)
-    .addReg(M6502::O6).addReg(M6502::G1);
-}
 
 void Mos6502FrameLowering::emitPrologue(MachineFunction &MF,
                                       MachineBasicBlock &MBB) const {
+  /*
   Mos6502MachineFunctionInfo *FuncInfo = MF.getInfo<Mos6502MachineFunctionInfo>();
 
   assert(&MF.front() == &MBB && "Shrink-wrapping not yet supported");
@@ -129,26 +85,12 @@ void Mos6502FrameLowering::emitPrologue(MachineFunction &MF,
       MCCFIInstruction::createRegister(nullptr, regOutRA, regInRA));
   BuildMI(MBB, MBBI, dl, TII.get(TargetOpcode::CFI_INSTRUCTION))
       .addCFIIndex(CFIIndex);
+  */
 }
-
-void Mos6502FrameLowering::
-eliminateCallFramePseudoInstr(MachineFunction &MF, MachineBasicBlock &MBB,
-                              MachineBasicBlock::iterator I) const {
-  if (!hasReservedCallFrame(MF)) {
-    MachineInstr &MI = *I;
-    int Size = MI.getOperand(0).getImm();
-    if (MI.getOpcode() == M6502::ADJCALLSTACKDOWN)
-      Size = -Size;
-
-    if (Size)
-      emitSPAdjustment(MF, MBB, I, Size, M6502::ADDrr, M6502::ADDri);
-  }
-  MBB.erase(I);
-}
-
 
 void Mos6502FrameLowering::emitEpilogue(MachineFunction &MF,
                                   MachineBasicBlock &MBB) const {
+  /*
   Mos6502MachineFunctionInfo *FuncInfo = MF.getInfo<Mos6502MachineFunctionInfo>();
   MachineBasicBlock::iterator MBBI = MBB.getLastNonDebugInstr();
   const Mos6502InstrInfo &TII =
@@ -169,11 +111,7 @@ void Mos6502FrameLowering::emitEpilogue(MachineFunction &MF,
 
   NumBytes = MF.getSubtarget<Mos6502Subtarget>().getAdjustedFrameSize(NumBytes);
   emitSPAdjustment(MF, MBB, MBBI, NumBytes, M6502::ADDrr, M6502::ADDri);
-}
-
-bool Mos6502FrameLowering::hasReservedCallFrame(const MachineFunction &MF) const {
-  // Reserve call frame if there are no variable sized objects on the stack.
-  return !MF.getFrameInfo()->hasVarSizedObjects();
+  */
 }
 
 // hasFP - Return true if the specified function should have a dedicated frame
@@ -185,6 +123,71 @@ bool Mos6502FrameLowering::hasFP(const MachineFunction &MF) const {
     MFI->hasVarSizedObjects() || MFI->isFrameAddressTaken();
 }
 
+/*
+void Mos6502FrameLowering::emitSPAdjustment(MachineFunction &MF,
+                                          MachineBasicBlock &MBB,
+                                          MachineBasicBlock::iterator MBBI,
+                                          int NumBytes,
+                                          unsigned ADDrr,
+                                          unsigned ADDri) const {
+
+  DebugLoc dl = (MBBI != MBB.end()) ? MBBI->getDebugLoc() : DebugLoc();
+  const Mos6502InstrInfo &TII =
+      *static_cast<const Mos6502InstrInfo *>(MF.getSubtarget().getInstrInfo());
+
+  if (NumBytes >= -4096 && NumBytes < 4096) {
+    BuildMI(MBB, MBBI, dl, TII.get(ADDri), M6502::O6)
+      .addReg(M6502::O6).addImm(NumBytes);
+    return;
+  }
+
+  // Emit this the hard way.  This clobbers G1 which we always know is
+  // available here.
+  if (NumBytes >= 0) {
+    // Emit nonnegative numbers with sethi + or.
+    // sethi %hi(NumBytes), %g1
+    // or %g1, %lo(NumBytes), %g1
+    // add %sp, %g1, %sp
+    BuildMI(MBB, MBBI, dl, TII.get(M6502::SETHIi), M6502::G1)
+      .addImm(HI22(NumBytes));
+    BuildMI(MBB, MBBI, dl, TII.get(M6502::ORri), M6502::G1)
+      .addReg(M6502::G1).addImm(LO10(NumBytes));
+    BuildMI(MBB, MBBI, dl, TII.get(ADDrr), M6502::O6)
+      .addReg(M6502::O6).addReg(M6502::G1);
+    return ;
+  }
+
+  // Emit negative numbers with sethi + xor.
+  // sethi %hix(NumBytes), %g1
+  // xor %g1, %lox(NumBytes), %g1
+  // add %sp, %g1, %sp
+  BuildMI(MBB, MBBI, dl, TII.get(M6502::SETHIi), M6502::G1)
+    .addImm(HIX22(NumBytes));
+  BuildMI(MBB, MBBI, dl, TII.get(M6502::XORri), M6502::G1)
+    .addReg(M6502::G1).addImm(LOX10(NumBytes));
+  BuildMI(MBB, MBBI, dl, TII.get(ADDrr), M6502::O6)
+    .addReg(M6502::O6).addReg(M6502::G1);
+}
+
+void Mos6502FrameLowering::
+eliminateCallFramePseudoInstr(MachineFunction &MF, MachineBasicBlock &MBB,
+                              MachineBasicBlock::iterator I) const {
+  if (!hasReservedCallFrame(MF)) {
+    MachineInstr &MI = *I;
+    int Size = MI.getOperand(0).getImm();
+    if (MI.getOpcode() == M6502::ADJCALLSTACKDOWN)
+      Size = -Size;
+
+    if (Size)
+      emitSPAdjustment(MF, MBB, I, Size, M6502::ADDrr, M6502::ADDri);
+  }
+  MBB.erase(I);
+}
+
+bool Mos6502FrameLowering::hasReservedCallFrame(const MachineFunction &MF) const {
+  // Reserve call frame if there are no variable sized objects on the stack.
+  return !MF.getFrameInfo()->hasVarSizedObjects();
+}
 
 static bool LLVM_ATTRIBUTE_UNUSED verifyLeafProcRegUse(MachineRegisterInfo *MRI)
 {
@@ -256,3 +259,4 @@ void Mos6502FrameLowering::determineCalleeSaves(MachineFunction &MF,
   }
 
 }
+*/

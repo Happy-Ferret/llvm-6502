@@ -24,18 +24,6 @@ namespace llvm {
 
 class Mos6502Subtarget;
 
-/// SPII - This namespace holds all of the target specific flags that
-/// instruction info tracks.
-///
-namespace SPII {
-  enum {
-    Pseudo = (1<<0),
-    Load = (1<<1),
-    Store = (1<<2),
-    DelaySlot = (1<<3)
-  };
-}
-
 class Mos6502InstrInfo : public Mos6502GenInstrInfo {
   const Mos6502RegisterInfo RI;
   const Mos6502Subtarget& Subtarget;
@@ -49,6 +37,7 @@ public:
   ///
   const Mos6502RegisterInfo &getRegisterInfo() const { return RI; }
 
+  /*
   /// isLoadFromStackSlot - If the specified machine instruction is a direct
   /// load from a stack slot, return the virtual or physical register number of
   /// the destination along with the FrameIndex of the loaded stack slot.  If
@@ -94,6 +83,7 @@ public:
                             const TargetRegisterInfo *TRI) const override;
 
   unsigned getGlobalBaseReg(MachineFunction *MF) const;
+  */
 };
 
 }

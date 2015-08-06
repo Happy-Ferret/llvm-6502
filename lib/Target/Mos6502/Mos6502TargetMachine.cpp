@@ -1,4 +1,4 @@
-//===-- Mos6502TargetMachine.cpp - Define TargetMachine for Mos6502 -----------===//
+//===-- Mos6502TargetMachine.cpp - Define TargetMachine for Mos6502 -------===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -11,7 +11,6 @@
 //===----------------------------------------------------------------------===//
 
 #include "Mos6502TargetMachine.h"
-#include "Mos6502TargetObjectFile.h"
 #include "Mos6502.h"
 #include "llvm/CodeGen/Passes.h"
 #include "llvm/IR/LegacyPassManager.h"
@@ -21,37 +20,18 @@ using namespace llvm;
 
 extern "C" void LLVMInitializeMos6502Target() {
   // Register the target.
-  RegisterTargetMachine<Mos6502TargetMachine> Z(TheMos6502Target);
+  RegisterTargetMachine<Mos6502TargetMachine> X(TheMos6502Target);
 }
 
-static std::string computeDataLayout(const Triple &T) {
-  std::string Ret = "e";
-  Ret += "-m:e";
-  Ret += "-p:32:32";
-
-  // Alignments for 64 bit integers.
-  Ret += "-i64:64";
-
-  // On Mos6502V9 128 floats are aligned to 128 bits, on others only to 64.
-  // On Mos6502V9 registers can hold 64 or 32 bits, on others only 32.
-  Ret += "-f128:64-n32";
-
-  Ret += "-S64";
-
-  return Ret;
-}
-
-/// Mos6502TargetMachine ctor - Create an ILP32 architecture model
-///
 Mos6502TargetMachine::Mos6502TargetMachine(const Target &T, const Triple &TT,
                                        StringRef CPU, StringRef FS,
                                        const TargetOptions &Options,
                                        Reloc::Model RM, CodeModel::Model CM,
                                        CodeGenOpt::Level OL)
-    : LLVMTargetMachine(T, computeDataLayout(TT), TT, CPU, FS, Options,
-                        RM, CM, OL),
-      TLOF(make_unique<Mos6502ELFTargetObjectFile>()),
-      Subtarget(TT, CPU, FS, *this, false) {
+    : LLVMTargetMachine(T, "e-p:16:8:8-i8:8:8-i16:8:8-i32:8:8-i64:8:8-f32:8:8-f64:8:8-n8",
+            TT, CPU, FS, Options, RM, CM, OL),
+      Subtarget(TT, CPU, FS, *this)
+{
   initAsmInfo();
 }
 
@@ -89,4 +69,4 @@ bool Mos6502PassConfig::addInstSelector() {
   return false;
 }
 
-void Mos6502PassConfig::addPreEmitPass(){}
+void Mos6502PassConfig::addPreEmitPass() {}

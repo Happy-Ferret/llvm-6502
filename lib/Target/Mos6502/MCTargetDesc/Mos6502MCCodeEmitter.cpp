@@ -94,11 +94,11 @@ void Mos6502MCCodeEmitter::encodeInstruction(const MCInst &MI, raw_ostream &OS,
   unsigned tlsOpNo = 0;
   switch (MI.getOpcode()) {
   default: break;
-  case M6502::TLS_CALL:   tlsOpNo = 1; break;
-  case M6502::TLS_ADDrr:
-  case M6502::TLS_ADDXrr:
-  case M6502::TLS_LDrr:
-  case M6502::TLS_LDXrr:  tlsOpNo = 3; break;
+  //case M6502::TLS_CALL:   tlsOpNo = 1; break;
+  //case M6502::TLS_ADDrr:
+  //case M6502::TLS_ADDXrr:
+  //case M6502::TLS_LDrr:
+  //case M6502::TLS_LDXrr:  tlsOpNo = 3; break;
   }
   if (tlsOpNo != 0) {
     const MCOperand &MO = MI.getOperand(tlsOpNo);
@@ -146,6 +146,7 @@ getCallTargetOpValue(const MCInst &MI, unsigned OpNo,
   if (MO.isReg() || MO.isImm())
     return getMachineOpValue(MI, MO, Fixups, STI);
 
+  /*
   if (MI.getOpcode() == M6502::TLS_CALL) {
     // No fixups for __tls_get_addr. Will emit for fixups for tls_symbol in
     // encodeInstruction.
@@ -160,6 +161,7 @@ getCallTargetOpValue(const MCInst &MI, unsigned OpNo,
 #endif
     return 0;
   }
+  */
 
   MCFixupKind fixupKind = (MCFixupKind)Mos6502::fixup_mos6502_call30;
 
