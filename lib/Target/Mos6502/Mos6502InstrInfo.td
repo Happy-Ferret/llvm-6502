@@ -38,6 +38,7 @@ Defs = [A, SREG] in
 //===----------------------------------------------------------------------===//
 // Increment and Decrement
 //===----------------------------------------------------------------------===//
+
 let Defs = [X, SREG] in
 {
   def INX : InstM6502<(outs XR:$dst),
@@ -63,6 +64,39 @@ let Defs = [Y, SREG] in
                       "dey",
                       [(set YR:$dst, (sub YR:$src, 1)), (implicit SREG)]>;
 }
+
+//===----------------------------------------------------------------------===//
+// Stack operations
+//===----------------------------------------------------------------------===//
+
+let Defs = [SP],
+    Uses = [SP] in
+{
+  // Push accumulator on stack
+  let mayStore = 1 in {
+    def PHA : InstM6502<(outs), (ins AR:$a), "pha", []>;
+  }
+
+  // Pop from stack into accumulator
+  let mayLoad = 1 in {
+    def PLA : InstM6502<(outs AR:$a), (ins), "pla", []>;
+  }
+}
+
+let Defs = [SP],
+    Uses = [SP, SREG],
+    mayStore = 1 in
+{
+  def PHP : InstM6502<(outs), (ins CCR:$c), "php", []>;
+}
+
+let Defs = [SP, SREG],
+    Uses = [SP],
+    mayLoad = 1 in
+{
+  def PLP : InstM6502<(outs CCR:$c), (ins), "plp", []>;
+}
+
 
 def NOP : InstM6502<(outs), (ins), "nop", []>;
 
